@@ -1,18 +1,19 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, render_template
 import yt_dlp
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="../frontend")
 
 @app.route("/")
 def home():
-    return "Vidsphere backend is running!"
+    return render_template("index.html")
 
 @app.route("/download", methods=["POST"])
 def download():
-    url = request.form.get("url")
+    url = request.form["url"]
 
     ydl_opts = {
-        "outtmpl": "downloaded_video.%(ext)s"
+        "outtmpl": "video.%(ext)s"
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -22,5 +23,5 @@ def download():
     return send_file(filename, as_attachment=True)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-  
+    app.run(debug=True)
+    
